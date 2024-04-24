@@ -4,8 +4,7 @@ using UnityEngine;
 
 public class Move_BG : MonoBehaviour
 {
-    public float cenarioVelocity;
- 
+
     // Update is called once per frame
     void Update()
     {
@@ -14,7 +13,8 @@ public class Move_BG : MonoBehaviour
 
     private void MoveBackground()
     {
-        Vector2 displacement = new Vector2(Time.time * cenarioVelocity, 0);
+        float speed = GameManager.Instance.gameSpeed / transform.localScale.x;
+        Vector2 displacement = new Vector2(Time.time * speed, 0);
         GetComponent<Renderer>().material.mainTextureOffset = displacement;
     }
 }

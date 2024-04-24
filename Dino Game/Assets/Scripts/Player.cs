@@ -15,11 +15,16 @@ public class Player : MonoBehaviour
     public Button start;
     public Button restart;
     public Image gameOverImage;
+    public Text scoreText;
+
+    public AudioSource gameAudio;
+    public AudioClip[] gameSounds;
 
     // Start is called before the first frame update
     void Start()
     {
         Time.timeScale = 0;
+        GameManager.Instance.UpsdateHiScore();
         rbPalyer = gameObject.GetComponent<Rigidbody2D>();
 
         dinoAnim.SetBool("jump", false);
@@ -31,16 +36,20 @@ public class Player : MonoBehaviour
         gameOverImage.gameObject.SetActive(false);
         restart.onClick.AddListener(Restart);
         start.onClick.AddListener(Starting);
+        GameManager.Instance.gameSpeed = GameManager.Instance.initialGameSpeed;
+        gameAudio.PlayOneShot(gameSounds[0]);
     }
 
     // Update is called once per frame
     void Update()
     {
+        
         if (jump && Input.GetKeyDown(KeyCode.Space) || jump && Input.GetKeyDown(KeyCode.DownArrow))
         {
             rbPalyer.AddForce(Vector2.up * jumpVel, ForceMode2D.Impulse);
             dinoAnim.SetBool("jump", true);
             dinoAnim.SetBool("walk", false);
+            gameAudio.PlayOneShot(gameSounds[1]);
         }
     }
 
@@ -48,10 +57,12 @@ public class Player : MonoBehaviour
     {
         if (collision.gameObject.CompareTag("Ground"))
         {
+            gameAudio.PlayOneShot(gameSounds[3]);
             jump = true;
             dinoAnim.SetBool("jump", false);
             dinoAnim.SetBool("walk", true);
-        }else if (collision.gameObject.CompareTag("Cactus"))
+        }
+        else if (collision.gameObject.CompareTag("Cactus"))
         {
             GameOver();
         }
@@ -67,6 +78,8 @@ public class Player : MonoBehaviour
 
     public void Starting()
     {
+        GameManager.Instance.gameSpeed = GameManager.Instance.initialGameSpeed;
+        GameManager.Instance.UpsdateHiScore();
         start.gameObject.SetActive(false);
         gameOverImage.gameObject.SetActive(false);
         Time.timeScale = 1;
@@ -82,11 +95,13 @@ public class Player : MonoBehaviour
 
     private void GameOver()
     {
+        gameAudio.PlayOneShot(gameSounds[2]);
         Time.timeScale = 0;
         restart.gameObject.SetActive(true);
         gameOverImage.gameObject.SetActive(true);
         dinoAnim.SetBool("jump", false);
         dinoAnim.SetBool("walk", false);
         dinoAnim.SetBool("die", true);
+        GameManager.Instance.UpsdateHiScore();
     }
 }
